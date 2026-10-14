@@ -1,0 +1,79 @@
+**Proses:
+
+1. Membaca dataset ronaldo_text_clean.csv.
+2. Menggunakan model: cardiffnlp/twitter-roberta-base-sentiment-latest
+3. Melakukan klasifikasi dengan batch size 16 dan maksimum 512 token.
+4. Menambahkan kolom 'sentimen' dan 'confidence'
+5. Menyimpan hasil ke ronaldo_labeled.csv
+
+**Hasil Utama:
+
+Total data: 565 teks
+
+Sentimen	Jumlah	Persentase
+Neutral	    273	    48,32%
+Negative	175	    30,97%
+Positive	117	    20,71%
+
+Mayoritas teks mengenai Ronaldo dikategorikan Neutral, diikuti Negative dan Positive.
+Menunjukan bahwa presepsi negatif terhadap Cristiano Ronaldo lebih tinggi dibandingkan
+presepsi positif. 
+
+Rata-rata confidence berdasarkan sentimen:
+
+Sentimen	Rata-rata
+Positive	75,97%
+Negative	71,20%
+Neutral	    68,68%
+
+Sistem cendrung memberi label “neutral” untuk beberapa data yang seharusnya bernilai “positif” 
+atau “negatif”. Kecendrungan ini mungkin dikarenakan kekurangan sistem dalam memahami konteks, 
+sindiran, atau penanganan camopuran sentimen dalam post.
+
+**Hasil pemeriksaan sederhana sentimen:
+Dipilih 20 data random menggunakan fungsi data.sample(n=20, random_state=44).
+Prediksi sesuai pelabelan 	: 15 data
+Prediksi yang melenceng 	: 5 data
+Persentase keakuratan prediksi 	: 75%
+
+Pembahasan 3 ketidaksesuaian:
+
+1.	“cristiano ronaldo replies to messi on ig leo so many years defending your country and a 
+    history that will last forever all my respect for what you have achieved with argentina 
+    a hug apparently ronaldo is self centered and arrogant” 
+    
+    Prediksi sistem: Neu	
+    Sistem mengklasifikasikan keseluruhan teks sebagai netral karena terdapat campuran konteks 
+    dan sentimen, atau karena kata-kata positif dan negatif saling memengaruhi skor prediksi. 	
+    
+    Prediksi manual: Pos	
+    Bagian pertama berisi penghormatan terhadap Messi, seperti “all my respect” dan “a history
+    that will last forever”, yang menunjukkan sentimen positif. Bagian akhir merupakan penegasan 
+    bahwa Ronaldo menunjukkan sikap menghormati Messi, berlawanan dengan persepsi bahwa ia 
+    arogan dan mementingkan diri sendiri.
+    
+2.	“ronaldo fans are yet to discover time zone” 
+
+    Prediksi sistem: Neu	
+    Sistem menghasilkan label netral karena kalimatnya tidak mengandung kata negatif yang jelas.
+    
+    Prediksi manual: Neg	
+    Kalimat mengandung makna implisit sindiran terhadap penggemar Ronaldo, yang menyiratkan 
+    ejekan atau anggapan bahwa penggemar Ronaldo kurang memahami sesuatu.
+    
+3.	“did you know goncalo ramos created as many chances vs denmark as cristiano ronaldo did 
+    in his last 8 matches with portugal combined ramos was able to create 3 chances score a 
+    goal and give an assist vs denmark” 
+
+    Prediksi sistem: Neu	
+    Sistem mengklasifikasikan kalimat sebagai netral karena kalimat disampaikan dalam bentuk 
+    informasi dan statistik, tanpa kata-kata negatif yang eksplisit. 	
+    
+    Prediksi manual: Neg	
+    Kalimat membandingkan kontribusi Gonçalo Ramos dalam pertandingan melawan Denmark dengan 
+    kontribusi Ronaldo selama delapan pertandingan terakhirnya bersama Portugal. Perbandingan 
+    tersebut menyiratkan kritik performa Ronaldo karena kontribusinya lebih rendah dibandingkan 
+    Ramos.
+
+
+

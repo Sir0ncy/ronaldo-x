@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Load dataset
-dataset_path = 'ronaldo_labeled.csv'
+dataset_path = 'sentimen/ronaldo_labeled.csv'
 data = pd.read_csv(dataset_path)
 
 st.title("Analisis Sentimen Ronaldo")
@@ -26,8 +26,8 @@ st.bar_chart(sentiment_counts)
 st.write("### Dataset")
 st.dataframe(data)
 
-# 20 random samples from the dataset
-st.write("### 20 Data Random dari Dataset")
-df_random = data.sample(n=20, random_state=44)
-df_random = df_random.drop(columns=['confidence'])
-st.dataframe(df_random)
+# 20 random samples from the dataset untuk predik manual
+# st.write("### 20 Data Random dari Dataset")
+# df_random = data.sample(n=20, random_state=44)
+# df_random = df_random.drop(columns=['confidence', 'sentimen'])
+# st.dataframe(df_random)

@@ -1,0 +1,48 @@
+Initial row count: 580
+Duplicates removed by id_str: 0
+Duplicates removed by text_clean: 1
+Rows after dedup: 579
+
+Missing values per column (after dedup):
+  conversation_id_str: 0
+  created_at: 0
+  favorite_count: 0
+  full_text: 0
+  id_str: 0
+  image_url: 213
+  in_reply_to_screen_name: 579
+  lang: 0
+  location: 579
+  quote_count: 0
+  reply_count: 0
+  retweet_count: 0
+  tweet_url: 0
+  user_id_str: 0
+  username: 0
+  text_clean: 0
+Rows with empty full_text removed: 0
+Rows with empty text_clean removed: 0
+Rows after missing-value removal: 579
+
+Invalid/missing favorite_count (null) rows: 0
+
+Relevance results:
+  relevant:   565
+  review:     11
+  irrelevant: 3
+Final row count of main file (relevant): 565
+
+Validation:
+  [PASS] No duplicate id_str in main file - 0 duplicates
+  [PASS] No empty full_text or text_clean in main file
+  [PASS] favorite_count null or non-negative integer - 0 nulls
+  [PASS] full_text unchanged & text_clean is separate column
+  [PASS] text_clean free of '&' or encoded strings - 0 rows
+  [PASS] text_clean free of uppercase letters - 0 rows
+  [PASS] text_clean free of commas - 0 rows
+  [PASS] text_clean free of periods except between digits - 0 rows
+  [PASS] text_clean free of apostrophes or % - 0 rows
+  [PASS] text_clean free of step-7 symbols - 0 rows
+  [PASS] text_clean free of URLs - 0 rows
+  [PASS] Every hashtag from full_text kept (lowercased) - 0 lost
+  [PASS] Row count: initial = main + review + removed - initial=580, main=565, review=11, removed(dups+irrelevant)=4

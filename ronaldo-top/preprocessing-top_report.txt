@@ -1,0 +1,17 @@
+Preprocessing Report
+====================
+Initial row count: 580
+Removed duplicates: 0
+Removed empty text rows: 0
+
+Missing values by column:
+- image_url: 213
+- in_reply_to_screen_name: 580
+- location: 580
+
+Relevance results:
+- relevant: 564
+- manual_review: 11
+- irrelevant: 5
+- invalid likes: 0
+Final row count: 564

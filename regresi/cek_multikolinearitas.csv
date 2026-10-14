@@ -1,0 +1,6 @@
+Variabel_1,Variabel_2,Nilai_Korelasi
+posting_hour,word_count,1.0
+posting_hour,text_length,0.9813200470213997
+word_count,text_length,0.9813200470213997
+retweet_count,favorite_count,0.9108971798583736
+quote_count,reply_count,0.8502970428588104

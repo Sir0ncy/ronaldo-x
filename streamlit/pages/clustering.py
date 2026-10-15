@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -8,6 +10,11 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import PCA
 from wordcloud import WordCloud
+
+# Resolve paths relative to this script so the app runs from any working directory.
+# This file lives in <project>/streamlit/pages/, so the project root is two levels up.
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 
 st.set_page_config(page_title="Ronaldo Tweet Clustering", layout="wide")
 st.title("Ronaldo Tweet Clustering")
@@ -20,7 +27,7 @@ CLUSTER_THEMES = {0: "Fan Debate on Portugal and GOAT Status", 1: "Farewell to M
 COLORS = ["blue", "orange", "green"]
 
 def load_data():
-    data = pd.read_csv("ronaldo_clustering.csv")
+    data = pd.read_csv(os.path.join(PROJECT_DIR, "clustering", "ronaldo_clustering.csv"))
     data["text_clean"] = data["text_clean"].fillna("").astype(str)
     data["cluster_theme"] = data["cluster_theme"].fillna("").astype(str)
     data = data[data["text_clean"].str.strip().ne("") & data["cluster"].notna()].copy()

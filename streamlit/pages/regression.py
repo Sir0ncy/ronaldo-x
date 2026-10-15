@@ -1,3 +1,5 @@
+import os
+
 import joblib
 import numpy as np
 import pandas as pd
@@ -5,8 +7,13 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error, r2_score
 
-MODEL_PATH = "regresi/model_regresi.pkl"
-DATA_PATH = "regresi/data_regresi_twitter.csv"
+# Resolve paths relative to this script so the app runs from any working directory.
+# This file lives in <project>/streamlit/pages/, so the project root is two levels up.
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
+
+MODEL_PATH = os.path.join(PROJECT_DIR, "regresi", "model_regresi.pkl")
+DATA_PATH = os.path.join(PROJECT_DIR, "regresi", "data_regresi_twitter.csv")
 TARGET = "retweet_count"
 FITUR = ["favorite_count", "has_image", "word_count"]
 

@@ -1,8 +1,15 @@
-import streamlit as st
+import os
+
 import pandas as pd
+import streamlit as st
+
+# Resolve paths relative to this script so the app runs from any working directory.
+# This file lives in <project>/streamlit/pages/, so the project root is two levels up.
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 
 # Load dataset
-dataset_path = 'sentimen/ronaldo_labeled.csv'
+dataset_path = os.path.join(PROJECT_DIR, "sentimen", "ronaldo_labeled.csv")
 data = pd.read_csv(dataset_path)
 
 st.title("Analisis Sentimen Ronaldo")

@@ -4,8 +4,9 @@ import pandas as pd
 import streamlit as st
 
 # Resolve paths relative to this script so the app runs from any working directory.
+# This file lives in <project>/streamlit/pages/, so the project root is two levels up.
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
+PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 
 st.set_page_config(
     page_title="Preprocessing",

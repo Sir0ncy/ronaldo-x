@@ -29,3 +29,9 @@ df = load_cleaned_data()
 with st.container(horizontal=True):
     st.metric("Total rows", len(df), border=True)
     st.metric("Total columns", len(df.columns), border=True)
+
+cola, colb = st.columns(2)
+with cola:
+    st.image("https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA2eavev.img?w=768&h=474&m=6&x=95&y=133&s=825&d=249", width='stretch')
+with colb:
+    st.image("https://tse2.mm.bing.net/th/id/OIP.pAGKsZhSw2M7rVwx36E0ygAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", width='stretch')

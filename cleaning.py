@@ -1,19 +1,3 @@
-"""
-Preprocessing script for the Ronaldo tweet dataset (ronaldo.csv).
-
-Follows the instructions in "preprocessing (1).md":
-  1. Build text_clean from full_text (Unicode normalize, unescape entities,
-     remove URLs/mentions, lowercase, strip symbols/emojis, keep hashtags,
-     in-word apostrophes, digit periods and %).
-  2. Remove duplicates by id_str, then by text_clean (keep earliest created_at).
-  3. Handle missing values (report; drop empty full_text / text_clean).
-  4. Label topic relevance: relevant / review / irrelevant.
-  5. Validate favorite_count (parse "1.2K"/"1.5M", strip commas; invalid -> null).
-  6. Write ronaldo_clean.csv, ronaldo_manual_review.csv, preprocessing_report.txt.
-
-The original file is never modified; full_text is kept untouched.
-"""
-
 import html
 import os
 import re

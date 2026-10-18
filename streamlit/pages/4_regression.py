@@ -21,9 +21,9 @@ DATA_PATH = os.path.join(PROJECT_DIR, "regresi", "data_regresi_twitter.csv")
 TARGET = "retweet_count"
 FITUR = ["favorite_count", "has_image", "word_count"]
 VIF_COLS = ["posting_hour", "text_length", "favorite_count",
-            "reply_count", "quote_count", "has_image", "sentiment_code"]
+            "reply_count", "quote_count", "has_image", "sentiment_code",'word_count']
 THRESHOLD = 0.80
-TEST_SIZE = 0.2  
+TEST_SIZE = 0.3  
 RANDOM_STATE = 42     
 
 st.set_page_config(page_title="Prediksi Retweet", layout="wide")

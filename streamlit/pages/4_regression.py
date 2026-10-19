@@ -1,20 +1,3 @@
-"""Halaman Prediksi Retweet dengan Regresi Linear Berganda.
-
-Urutan isi halaman dari atas ke bawah:
-1. Dataset tweet beserta keterangan kolomnya.
-2. Pemeriksaan multikolinearitas lewat korelasi Pearson dan VIF.
-3. Daftar variabel X yang dipakai beserta alasannya.
-4. Spesifikasi training: pembagian data latih dan data uji.
-5. Hasil model: MAE, R2, perbandingan dengan tebak median, dan koefisien tiap variabel X.
-6. Grafik aktual versus prediksi, bisa dilihat dalam skala log.
-7. Form untuk mencoba prediksi dari input pengguna.
-
-Catatan:
-- Data hanya dari tweet tab Top (tweet yang sudah viral), jadi R2 yang tinggi tidak otomatis berlaku untuk tweet biasa.
-- Model dan dataset dimuat lewat cache Streamlit supaya tidak dibaca ulang dari file setiap kali ada interaksi.
-- Baris yang kosong atau nilainya tak hingga dibuang sebelum training supaya model tidak error.
-"""
-
 import os
 
 import joblib

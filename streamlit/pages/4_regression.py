@@ -1,3 +1,20 @@
+"""Halaman Prediksi Retweet dengan Regresi Linear Berganda.
+
+Urutan isi halaman dari atas ke bawah:
+1. Dataset tweet beserta keterangan kolomnya.
+2. Pemeriksaan multikolinearitas lewat korelasi Pearson dan VIF.
+3. Daftar variabel X yang dipakai beserta alasannya.
+4. Spesifikasi training: pembagian data latih dan data uji.
+5. Hasil model: MAE, R2, perbandingan dengan tebak median, dan koefisien tiap variabel X.
+6. Grafik aktual versus prediksi, bisa dilihat dalam skala log.
+7. Form untuk mencoba prediksi dari input pengguna.
+
+Catatan:
+- Data hanya dari tweet tab Top (tweet yang sudah viral), jadi R2 yang tinggi tidak otomatis berlaku untuk tweet biasa.
+- Model dan dataset dimuat lewat cache Streamlit supaya tidak dibaca ulang dari file setiap kali ada interaksi.
+- Baris yang kosong atau nilainya tak hingga dibuang sebelum training supaya model tidak error.
+"""
+
 import os
 
 import joblib
@@ -11,8 +28,9 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, r2_score
 
-# Resolve paths relative to this script so the app runs from any working directory.
-# This file lives in <project>/streamlit/pages/, so the project root is two levels up.
+# Path file disusun relatif terhadap file ini supaya aplikasi tetap jalan
+# meski dijalankan dari folder lain. File ini ada di <project>/streamlit/pages/,
+# jadi folder project ada dua tingkat di atasnya.
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 
@@ -21,32 +39,34 @@ DATA_PATH = os.path.join(PROJECT_DIR, "regresi", "data_regresi_twitter.csv")
 TARGET = "retweet_count"
 FITUR = ["favorite_count", "has_image", "word_count"]
 VIF_COLS = ["posting_hour", "text_length", "favorite_count",
-            "reply_count", "quote_count", "has_image", "sentiment_code",'word_count']
+            "reply_count", "quote_count", "has_image", "sentiment_code", 'word_count']
 THRESHOLD = 0.80
-TEST_SIZE = 0.3  
-RANDOM_STATE = 42     
+TEST_SIZE = 0.3
+RANDOM_STATE = 42
 
 st.set_page_config(page_title="Prediksi Retweet", layout="wide")
 st.title("Prediksi Retweet Postingan X (Twitter)")
 st.caption("Model regresi linear berganda, data dari tweet 'Ronaldo' tab Top.")
- 
+
 @st.cache_resource
 def muat_model():
+    """Muat model regresi dari file pkl."""
     return joblib.load(MODEL_PATH)
- 
- 
+
+
 @st.cache_data
 def muat_data():
+    """Baca dataset tweet dari file csv."""
     return pd.read_csv(DATA_PATH)
- 
- 
+
+# Model dan dataset dipakai di semua bagian halaman, jadi cukup dimuat sekali.
 model = muat_model()
 dataset = muat_data()
- 
+
 with st.container(border=True):
     st.write(f"Jumlah baris: **{dataset.shape[0]}**, jumlah kolom: **{dataset.shape[1]}**")
     st.dataframe(dataset, use_container_width=True, height=300)
-    
+
     st.write("---\nKeterangan:")
     cola, colb = st.columns(2)
     with cola:
@@ -55,7 +75,9 @@ with st.container(border=True):
     with colb:
         with st.container(border=True):
             st.markdown("2. Kolom `text_length`, `word_count`, `posting_hour`, `has_image`, dan `sentiment_code` dari ekstraksi dataset.")
-    
+
+# Multikolinearitas terjadi kalau sesama variabel X saling berkorelasi kuat,
+# sehingga koefisien regresi jadi tidak stabil. Dicek pakai korelasi Pearson dan VIF.
 st.header("# Cek Multikolinearitas")
 with st.container(border=True):
     st.write(
@@ -64,8 +86,8 @@ with st.container(border=True):
     )
 
     df_fitur = dataset.select_dtypes(include="number")
-    
-    # Heatmap
+
+    # Heatmap korelasi Pearson antar semua kolom numerik.
     st.subheader("1. Heatmap Korelasi")
     matriks_korelasi = df_fitur.corr(method="pearson")
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -74,8 +96,8 @@ with st.container(border=True):
     ax.set_title("Heatmap Korelasi Antar Variabel Numerik Tweet", fontsize=14, pad=15)
     plt.tight_layout()
     st.pyplot(fig)
-    
-    # VIF
+
+    # VIF tiap kolom yang Dicek, kolom const tidak diberi nilai status.
     st.subheader("2. VIF (Variance Inflation Factor)")
     vif_cols = [c for c in VIF_COLS if c in dataset.columns]
     X_vif = dataset[vif_cols].replace([np.inf, -np.inf], np.nan).dropna().astype(float)
@@ -90,7 +112,8 @@ with st.container(border=True):
     st.dataframe(vif, use_container_width=True, hide_index=True)
     st.caption("VIF < 5 aman, 5-10 waspada, > 10 multikolinearitas serius. Baris const diabaikan.")
 
-# Choose features and target
+# Y adalah retweet_count. X adalah favorite_count, has_image, dan word_count.
+# Ketiga X dipilih karena VIF-nya aman dan hubungannya dengan Y linear.
 st.header("# Variabel yang Dipilih")
 with st.container(border=True):
     keterangan = pd.DataFrame([
@@ -100,8 +123,9 @@ with st.container(border=True):
         ["word_count", "X", "Jumlah kata teks postingan"],
     ], columns=["Variabel", "Peran", "Alasan"])
     st.dataframe(keterangan, use_container_width=True, hide_index=True)
- 
-# Detail training spesification and training regression model
+
+# Data dibagi 70 persen latih dan 30 persen uji. random_state 42 supaya
+# pembagian datanya selalu sama setiap kali halaman dibuka.
 st.header("# Spesifikasi Training")
 with st.container(border=True):
     data = dataset[FITUR + [TARGET]].replace([np.inf, -np.inf], np.nan).dropna()
@@ -116,24 +140,27 @@ with st.container(border=True):
                 "Asli (tanpa transformasi log)"],
     })
     st.dataframe(spesifikasi, use_container_width=True, hide_index=True)
- 
-# Results
+
+# Prediksi dipotong di nol karena jumlah retweet tidak mungkin negatif,
+# lalu dihitung MAE dan R2-nya. Pembandingnya adalah menebak median data latih.
 st.header("# Hasil Model")
 with st.container(border=True):
     y_pred = np.clip(model.predict(X_test), 0, None)
     mae = mean_absolute_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
     mae_base = mean_absolute_error(y_test, np.full(len(y_test), y_train.median()))
-    
+
     c1, c2, c3 = st.columns(3)
     c1.metric("MAE (data uji)", f"{mae:,.1f}", help="Rata-rata selisih prediksi dan retweet sebenarnya")
     c2.metric("R² (data uji)", f"{r2:.3f}", help="Proporsi variasi retweet yang dijelaskan model")
     c3.metric("MAE tebak median", f"{mae_base:,.1f}", help="Pembanding: jika selalu menebak median")
-    
+
     st.info(
         "R² tinggi sebagian besar didorong tweet viral (data tab Top). "
         "Model hanya cocok untuk tweet populer, tidak untuk semua tweet."
     )
+
+    # Koefisien masing-masing X dan artinya dalam satu kalimat.
     st.markdown("#### Pengaruh Variabel X terhadap Retweet")
     pengaruh = pd.DataFrame({"Variabel": FITUR, "Koefisien": model.coef_})
     pengaruh["Arti"] = [
@@ -143,11 +170,11 @@ with st.container(border=True):
     st.dataframe(pengaruh, use_container_width=True, hide_index=True)
     st.write(f"Intersep: **{float(model.intercept_):.2f}**")
     st.caption("Koefisien menunjukkan hubungan statistik, bukan sebab-akibat.")
- 
-# Check actual vs predicted plot
-st.subheader("# Grafik Aktual vs Prediksi")
+
+# Scatter aktual versus prediksi. Skala log dipakai supaya pola tweet yang
+# tidak viral tetap kelihatan, karena selisih angkanya bisa sangat besar.
+st.header("# Grafik Aktual vs Prediksi")
 with st.container(border=True):
-    # Using log scale to make the pattern more visible, especially for non-viral tweets
     skala_log = st.checkbox("Skala log (pola tweet biasa lebih terlihat)", value=True)
     fig2, ax2 = plt.subplots(figsize=(6, 5))
     xa, ya = (np.log1p(y_test), np.log1p(y_pred)) if skala_log else (y_test, y_pred)
@@ -159,8 +186,9 @@ with st.container(border=True):
     ax2.legend()
     st.pyplot(fig2)
     st.caption("Semakin dekat titik ke garis merah, semakin akurat prediksinya.")
- 
-# ------------------------------------------------------------- 6. FORM
+
+# Form input: teks postingan, perkiraan jumlah favorit, dan ada gambar atau tidak.
+# Jumlah kata dihitung dari teksnya, karena model cuma butuh angka.
 st.header("# Coba Prediksi")
 with st.form("form_prediksi"):
     teks = st.text_area("Teks postingan", max_chars=280,
@@ -168,7 +196,7 @@ with st.form("form_prediksi"):
     favorit = st.number_input("Perkiraan jumlah favorit (like)", min_value=0, value=1000, step=100)
     ada_gambar = st.checkbox("Postingan memuat gambar")
     kirim = st.form_submit_button("Hitung prediksi")
- 
+
 if kirim:
     with st.container(border=True):
         if not teks.strip():
@@ -179,7 +207,7 @@ if kirim:
             a, b = st.columns(2)
             a.metric("Jumlah huruf (karakter)", jumlah_huruf)
             b.metric("Jumlah kata", jumlah_kata)
-    
+
             nilai = {
                 "favorite_count": favorit,
                 "has_image": int(ada_gambar),
@@ -187,8 +215,8 @@ if kirim:
                 "text_length": jumlah_huruf,
             }
             X_baru = pd.DataFrame([[nilai[f] for f in FITUR]], columns=FITUR)
+            # Hasil prediksi tidak boleh negatif, jadi minimal nol.
             hasil = max(float(model.predict(X_baru)[0]), 0)
-    
+
             st.success(f"Prediksi retweet: sekitar **{hasil:,.0f}**")
             st.caption(f"Perkiraan kesalahan rata-rata ±{mae:,.0f} retweet (MAE).")
-    
